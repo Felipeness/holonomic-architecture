@@ -1,0 +1,19 @@
+{
+  "name": "@holonomic/workflows",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "@temporalio/workflow": "^1.11.6",
+    "@holonomic/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

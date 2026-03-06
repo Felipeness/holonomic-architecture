@@ -1,0 +1,224 @@
+services:
+  # ─── Infrastructure ────────────────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: holonomic
+      POSTGRES_PASSWORD: holonomic_secret
+      POSTGRES_DB: holonomic
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init-schemas.sql:/docker-entrypoint-initdb.d/01-init-schemas.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U holonomic"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── Temporal ──────────────────────────────────────────────────────────────
+
+  temporal:
+    image: temporalio/auto-setup:1.24
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=holonomic
+      - POSTGRES_PWD=holonomic_secret
+      - POSTGRES_SEEDS=postgres
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig.yml
+    ports:
+      - "7233:7233"
+    volumes:
+      - ./infra/temporal/dynamicconfig.yml:/etc/temporal/config/dynamicconfig.yml
+
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    ports:
+      - "8233:8080"
+
+  # ─── Observability ─────────────────────────────────────────────────────────
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0
+    command: ["--config", "/etc/otel-collector-config.yml"]
+    volumes:
+      - ./infra/otel/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus exporter
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3030:3000"
+
+  # ─── Holons ────────────────────────────────────────────────────────────────
+
+  holon-a:
+    build:
+      context: .
+      dockerfile: holons/holon-a/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: holonomic
+      POSTGRES_PASSWORD: holonomic_secret
+      POSTGRES_DB: holonomic
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      HOLON_A_PORT: 3001
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: holon-a
+    ports:
+      - "3001:3001"
+
+  holon-a-worker:
+    build:
+      context: .
+      dockerfile: holons/holon-a/Dockerfile
+    command: ["node", "dist/worker.js"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: holonomic
+      POSTGRES_PASSWORD: holonomic_secret
+      POSTGRES_DB: holonomic
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE_HOLON_A: holon-a-queue
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: holon-a-worker
+
+  holon-b:
+    build:
+      context: .
+      dockerfile: holons/holon-b/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: holonomic
+      POSTGRES_PASSWORD: holonomic_secret
+      POSTGRES_DB: holonomic
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      HOLON_B_PORT: 3002
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: holon-b
+    ports:
+      - "3002:3002"
+
+  holon-b-worker:
+    build:
+      context: .
+      dockerfile: holons/holon-b/Dockerfile
+    command: ["node", "dist/worker.js"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: holonomic
+      POSTGRES_PASSWORD: holonomic_secret
+      POSTGRES_DB: holonomic
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE_HOLON_B: holon-b-queue
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: holon-b-worker
+
+  # ─── BFF ───────────────────────────────────────────────────────────────────
+
+  bff:
+    build:
+      context: .
+      dockerfile: bff/Dockerfile
+    depends_on:
+      - holon-a
+      - holon-b
+      temporal:
+        condition: service_started
+    environment:
+      BFF_PORT: 3000
+      HOLON_A_URL: http://holon-a:3001
+      HOLON_B_URL: http://holon-b:3002
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE_WORKFLOWS: cross-holon-queue
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: bff
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

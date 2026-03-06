@@ -1,0 +1,76 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Request Rate (all holons)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(holonomic_http_request_duration_seconds_count[5m])",
+          "legendFormat": "{{service}} {{method}} {{route}}"
+        }
+      ]
+    },
+    {
+      "title": "Request Duration P95",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(holonomic_http_request_duration_seconds_bucket[5m]))",
+          "legendFormat": "{{service}} p95"
+        }
+      ]
+    },
+    {
+      "title": "Temporal Workflow Executions",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "holonomic_temporal_workflow_completed_total",
+          "legendFormat": "{{workflow}}"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(holonomic_http_request_duration_seconds_count{status=~\"5..\"}[5m])",
+          "legendFormat": "{{service}} 5xx"
+        }
+      ]
+    },
+    {
+      "title": "Activity Latency",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(holonomic_temporal_activity_duration_seconds_bucket[5m]))",
+          "legendFormat": "{{activity}} p95"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["holonomic"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "Holonomic Architecture Overview",
+  "uid": "holonomic-overview"
+}

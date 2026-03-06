@@ -1,0 +1,21 @@
+{
+  "name": "holonomic-architecture",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Holonomic Architecture Boilerplate — Fastify + Effect-TS + Temporal",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:holon-a": "pnpm --filter @holonomic/holon-a dev",
+    "dev:holon-b": "pnpm --filter @holonomic/holon-b dev",
+    "dev:bff": "pnpm --filter @holonomic/bff dev",
+    "worker:holon-a": "pnpm --filter @holonomic/holon-a worker",
+    "worker:holon-b": "pnpm --filter @holonomic/holon-b worker",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.{ts,json,yml,yaml,md}\"",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
