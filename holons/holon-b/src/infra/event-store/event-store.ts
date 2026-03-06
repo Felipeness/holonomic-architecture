@@ -2,8 +2,8 @@ import { Effect } from "effect"
 import type { Pool } from "pg"
 import type { HolonBId } from "@holonomic/shared/types"
 import type { HolonBEvent } from "@holonomic/shared/events/holon-b.events"
-import type { EventStore } from "../../brain/port/repository.js"
-import { RepositoryError } from "../../brain/port/repository.js"
+import type { EventStore } from "../../domain/port/repository.js"
+import { RepositoryError } from "../../domain/port/repository.js"
 
 // ─── Postgres Event Store Implementation ───────────────────────────────────
 

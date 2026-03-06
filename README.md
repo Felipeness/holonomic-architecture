@@ -24,19 +24,19 @@ graph TB
     subgraph "Holon A — Items"
         HA_API[Fastify Server<br/>:3001]
         HA_WORKER[Temporal Worker]
-        HA_SKIN[Skin — HTTP + Activities]
-        HA_BRAIN[Brain — Domain Model]
-        HA_MEMORY[Memory — Postgres schema holon_a]
-        HA_IMMUNE[Immune — Health + Idempotency]
+        HA_SKIN[API — HTTP + Activities]
+        HA_BRAIN[Domain — Domain Model]
+        HA_MEMORY[Infra — Postgres schema holon_a]
+        HA_IMMUNE[Resilience — Health + Idempotency]
     end
 
     subgraph "Holon B — Tasks"
         HB_API[Fastify Server<br/>:3002]
         HB_WORKER[Temporal Worker]
-        HB_SKIN[Skin — HTTP + Activities]
-        HB_BRAIN[Brain — Domain Model]
-        HB_MEMORY[Memory — Postgres schema holon_b]
-        HB_IMMUNE[Immune — Health + Idempotency]
+        HB_SKIN[API — HTTP + Activities]
+        HB_BRAIN[Domain — Domain Model]
+        HB_MEMORY[Infra — Postgres schema holon_b]
+        HB_IMMUNE[Resilience — Health + Idempotency]
     end
 
     subgraph "Infrastructure"
@@ -88,28 +88,30 @@ open http://localhost:3030               # Grafana (admin/admin)
 
 Each holon follows the same internal anatomy, mapped from biological systems:
 
-| Layer | Folder | Responsibility | Analogy |
-|-------|--------|---------------|---------|
-| **Skin** | `skin/` | Public interface — HTTP routes, Temporal activities | Cell membrane: controls what enters and exits |
-| **Brain** | `brain/` | Domain logic — entities, services, ports | Nucleus: decision-making, business rules |
-| **Memory** | `memory/` | Persistence — repositories, event store | DNA: stores and retrieves state |
-| **Immune** | `immune/` | Self-regulation — health checks, idempotency | Immune system: protects integrity |
+| Layer | Folder | Responsibility | Book Analogy |
+|-------|--------|---------------|-------------|
+| **API** | `api/` | Driving adapters — HTTP routes, Temporal activities | Skin: controls what enters and exits |
+| **Domain** | `domain/` | Domain core — entities, services, ports | Brain: decision-making, business rules |
+| **Infra** | `infra/` | Driven adapters — repositories, event store | Memory: stores and retrieves state |
+| **Resilience** | `resilience/` | Self-regulation — health checks, idempotency | Immune system: protects integrity |
+
+> See branch [`book-metaphors`](../../tree/book-metaphors) for the original naming from the book (skin/brain/memory/immune).
 
 ```
 holons/holon-a/src/
-├── skin/              # Layer 1: Interface
-│   ├── http/          # REST routes (driving adapter)
-│   └── temporal/      # Temporal activities (driving adapter)
-├── brain/             # Layer 2: Domain
+├── api/               # Layer 1: Driving Adapters
+│   ├── http/          # REST routes
+│   └── temporal/      # Temporal activities
+├── domain/            # Layer 2: Domain Core
 │   ├── model/         # Entities + value objects
 │   ├── service/       # Domain services (Effect programs)
 │   ├── port/          # Port interfaces (Context.Tag)
 │   └── event/         # Domain event constructors
-├── memory/            # Layer 3: Persistence
-│   ├── repository/    # Driven adapter (Postgres)
+├── infra/             # Layer 3: Driven Adapters
+│   ├── repository/    # Postgres adapter
 │   ├── event-store/   # Append-only event store
 │   └── migration/     # SQL migrations
-└── immune/            # Layer 4: Self-Regulation
+└── resilience/        # Layer 4: Self-Regulation
     ├── health.ts      # Liveness + readiness probes
     └── idempotency.ts # Idempotency guard (Redis)
 ```
@@ -135,7 +137,7 @@ Temporal provides: retry policies, timeouts, heartbeats, and exactly-once execut
 | Principle | Implementation |
 |-----------|---------------|
 | **Janus Effect** (autonomy + integration) | Each holon has its own Postgres schema + integrates via Temporal workflows |
-| **4 Anatomical Layers** | Explicit folder structure: skin/brain/memory/immune |
+| **4 Anatomical Layers** | Explicit folder structure: api/domain/infra/resilience |
 | **Law of Imports** | Holons never import from each other — only from `@holonomic/shared` |
 | **Native Resilience** | Temporal: retry, timeout, compensation, heartbeat built-in |
 | **Holistic Observability** | OpenTelemetry traces + metrics across all layers |
@@ -143,8 +145,8 @@ Temporal provides: retry policies, timeouts, heartbeats, and exactly-once execut
 | **Idempotency** | Redis-backed idempotency keys on all write operations |
 | **Saga Orchestration** | Temporal workflows with automatic compensation |
 | **Parse Don't Validate** | Effect Schema at boundary, branded types internally |
-| **Functional Core / Imperative Shell** | Pure Effect programs in brain, side effects in skin/memory |
-| **Screaming Architecture** | Folders scream domain (skin/brain/memory/immune), not framework |
+| **Functional Core / Imperative Shell** | Pure Effect programs in domain, side effects in api/infra |
+| **Screaming Architecture** | Folders scream purpose (api/domain/infra/resilience), not framework |
 
 ## API Endpoints
 

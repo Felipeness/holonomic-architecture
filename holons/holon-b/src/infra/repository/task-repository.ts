@@ -1,9 +1,9 @@
 import { Effect } from "effect"
 import type { Pool } from "pg"
 import { HolonBId } from "@holonomic/shared/types"
-import type { TaskRepository } from "../../brain/port/repository.js"
-import { RepositoryError } from "../../brain/port/repository.js"
-import { TaskTitle, TaskAssignee, type Task } from "../../brain/model/task.js"
+import type { TaskRepository } from "../../domain/port/repository.js"
+import { RepositoryError } from "../../domain/port/repository.js"
+import { TaskTitle, TaskAssignee, type Task } from "../../domain/model/task.js"
 
 // ─── Row → Domain ──────────────────────────────────────────────────────────
 

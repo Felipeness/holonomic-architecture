@@ -6,8 +6,8 @@ import {
   EventStore,
   EventStoreError,
   type EventStoreService,
-} from "../../brain/port/repository.js"
-import { ItemName, ItemDescription, type Item } from "../../brain/model/item.js"
+} from "../../domain/port/repository.js"
+import { ItemName, ItemDescription, type Item } from "../../domain/model/item.js"
 
 const makeService = (pool: Pool): EventStoreService => ({
   append: (aggregateId, event) =>

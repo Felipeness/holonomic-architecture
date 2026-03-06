@@ -7,8 +7,8 @@ import {
   ItemAlreadyExists,
   ItemRepositoryError,
   type ItemRepositoryService,
-} from "../../brain/port/repository.js"
-import { ItemName, ItemDescription, type Item } from "../../brain/model/item.js"
+} from "../../domain/port/repository.js"
+import { ItemName, ItemDescription, type Item } from "../../domain/model/item.js"
 
 const rowToItem = (row: Record<string, unknown>): Item => ({
   id: HolonAId(row["id"] as string),

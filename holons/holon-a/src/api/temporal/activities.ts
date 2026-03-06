@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect"
 import { HolonAId, CorrelationId } from "@holonomic/shared/types"
 import type { CreateItemInput, CreateItemOutput, CompensateItemInput } from "@holonomic/shared/workflows"
-import * as ItemService from "../../brain/service/item-service.js"
+import * as ItemService from "../../domain/service/item-service.js"
 import {
   ItemRepository,
   EventStore,
@@ -9,7 +9,7 @@ import {
   type ItemRepositoryService,
   type EventStoreService,
   type IdempotencyGuardService,
-} from "../../brain/port/repository.js"
+} from "../../domain/port/repository.js"
 
 // ─── Activity Context (injected at worker bootstrap) ────────────────────────
 

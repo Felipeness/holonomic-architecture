@@ -5,11 +5,11 @@ import type {
   CreateTaskOutput,
   CompensateTaskInput,
 } from "@holonomic/shared/workflows"
-import { createTask, compensateTask } from "../../brain/service/task-service.js"
-import { TaskRepository, EventStore, IdempotencyGuard } from "../../brain/port/repository.js"
-import type { PgTaskRepository } from "../../memory/repository/task-repository.js"
-import type { PgEventStore } from "../../memory/event-store/event-store.js"
-import type { PgIdempotencyGuard } from "../../immune/idempotency.js"
+import { createTask, compensateTask } from "../../domain/service/task-service.js"
+import { TaskRepository, EventStore, IdempotencyGuard } from "../../domain/port/repository.js"
+import type { PgTaskRepository } from "../../infra/repository/task-repository.js"
+import type { PgEventStore } from "../../infra/event-store/event-store.js"
+import type { PgIdempotencyGuard } from "../../resilience/idempotency.js"
 import type { Logger } from "pino"
 
 // ─── Activity Factory ──────────────────────────────────────────────────────

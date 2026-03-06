@@ -3,7 +3,7 @@ import { Effect, Layer } from "effect"
 import { Schema } from "@effect/schema"
 import { HolonAId, CorrelationId } from "@holonomic/shared/types"
 import { CreateItemSchema, UpdateItemSchema, type ItemResponse } from "./schemas.js"
-import * as ItemService from "../../brain/service/item-service.js"
+import * as ItemService from "../../domain/service/item-service.js"
 import {
   ItemRepository,
   EventStore,
@@ -11,8 +11,8 @@ import {
   type ItemRepositoryService,
   type EventStoreService,
   type IdempotencyGuardService,
-} from "../../brain/port/repository.js"
-import type { Item } from "../../brain/model/item.js"
+} from "../../domain/port/repository.js"
+import type { Item } from "../../domain/model/item.js"
 import type { Logger } from "pino"
 
 const toResponse = (item: Item): ItemResponse => ({

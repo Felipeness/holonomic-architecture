@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect"
 import type { Pool } from "pg"
 import type Redis from "ioredis"
-import { IdempotencyGuard, type IdempotencyGuardService } from "../brain/port/repository.js"
+import { IdempotencyGuard, type IdempotencyGuardService } from "../domain/port/repository.js"
 
 const REDIS_TTL_SECONDS = 86_400 // 24h
 

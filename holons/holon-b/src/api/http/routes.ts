@@ -3,19 +3,19 @@ import * as S from "@effect/schema/Schema"
 import { Effect, Layer } from "effect"
 import { HolonBId, CorrelationId } from "@holonomic/shared/types"
 import { v4 as uuid } from "uuid"
-import type { Task } from "../../brain/model/task.js"
+import type { Task } from "../../domain/model/task.js"
 import {
   createTask,
   getTask,
   completeTask,
   cancelTask,
   type TaskError,
-} from "../../brain/service/task-service.js"
-import { TaskRepository, EventStore, IdempotencyGuard } from "../../brain/port/repository.js"
+} from "../../domain/service/task-service.js"
+import { TaskRepository, EventStore, IdempotencyGuard } from "../../domain/port/repository.js"
 import { CreateTaskSchema, CompleteTaskSchema, TaskIdParamsSchema } from "./schemas.js"
-import type { PgTaskRepository } from "../../memory/repository/task-repository.js"
-import type { PgEventStore } from "../../memory/event-store/event-store.js"
-import type { PgIdempotencyGuard } from "../../immune/idempotency.js"
+import type { PgTaskRepository } from "../../infra/repository/task-repository.js"
+import type { PgEventStore } from "../../infra/event-store/event-store.js"
+import type { PgIdempotencyGuard } from "../../resilience/idempotency.js"
 import type { Logger } from "pino"
 
 // ─── Helpers ───────────────────────────────────────────────────────────────

@@ -1,10 +1,10 @@
 import { NativeConnection, Worker } from "@temporalio/worker"
 import { Pool } from "pg"
 import pino from "pino"
-import { makeActivities } from "./skin/temporal/activities.js"
-import { makePgTaskRepository } from "./memory/repository/task-repository.js"
-import { makePgEventStore } from "./memory/event-store/event-store.js"
-import { makePgIdempotencyGuard } from "./immune/idempotency.js"
+import { makeActivities } from "./api/temporal/activities.js"
+import { makePgTaskRepository } from "./infra/repository/task-repository.js"
+import { makePgEventStore } from "./infra/event-store/event-store.js"
+import { makePgIdempotencyGuard } from "./resilience/idempotency.js"
 
 // ─── Config ────────────────────────────────────────────────────────────────
 

@@ -8,11 +8,11 @@ import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http"
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http"
 import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify"
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics"
-import { registerRoutes } from "./skin/http/routes.js"
-import { registerHealthRoutes } from "./immune/health.js"
-import { makePgTaskRepository } from "./memory/repository/task-repository.js"
-import { makePgEventStore } from "./memory/event-store/event-store.js"
-import { makePgIdempotencyGuard } from "./immune/idempotency.js"
+import { registerRoutes } from "./api/http/routes.js"
+import { registerHealthRoutes } from "./resilience/health.js"
+import { makePgTaskRepository } from "./infra/repository/task-repository.js"
+import { makePgEventStore } from "./infra/event-store/event-store.js"
+import { makePgIdempotencyGuard } from "./resilience/idempotency.js"
 
 // ─── Config ────────────────────────────────────────────────────────────────
 

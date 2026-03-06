@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import type { Pool } from "pg"
-import type { IdempotencyGuard } from "../brain/port/repository.js"
-import { RepositoryError } from "../brain/port/repository.js"
+import type { IdempotencyGuard } from "../domain/port/repository.js"
+import { RepositoryError } from "../domain/port/repository.js"
 
 // ─── Postgres Idempotency Guard ────────────────────────────────────────────
 
