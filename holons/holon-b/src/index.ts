@@ -1,6 +1,6 @@
 import Fastify from "fastify"
 import { Pool } from "pg"
-import Redis from "ioredis"
+import { Redis } from "ioredis"
 import pino from "pino"
 import { NodeSDK } from "@opentelemetry/sdk-node"
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http"
@@ -24,8 +24,7 @@ const PG_PASSWORD = process.env["POSTGRES_PASSWORD"] ?? "holonomic_secret"
 const PG_DB = process.env["POSTGRES_DB"] ?? "holonomic"
 const REDIS_HOST = process.env["REDIS_HOST"] ?? "localhost"
 const REDIS_PORT = parseInt(process.env["REDIS_PORT"] ?? "6379", 10)
-const OTEL_ENDPOINT =
-  process.env["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://localhost:4318"
+const OTEL_ENDPOINT = process.env["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://localhost:4318"
 
 // ─── OpenTelemetry ─────────────────────────────────────────────────────────
 

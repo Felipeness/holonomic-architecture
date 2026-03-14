@@ -9,29 +9,34 @@ import {
   TaskAssignee,
   type Task,
 } from "../model/task.js"
-import { TaskRepository, EventStore, IdempotencyGuard, RepositoryError } from "../port/repository.js"
+import {
+  TaskRepository,
+  EventStore,
+  IdempotencyGuard,
+  RepositoryError,
+} from "../port/repository.js"
 import { taskCreated, taskCompleted, taskCancelled, taskCompensated } from "../event/task-events.js"
 
 // ─── Domain Errors ─────────────────────────────────────────────────────────
 
 export class TaskNotFound {
   readonly _tag = "TaskNotFound" as const
-  constructor(readonly taskId: string) {}
+  constructor(readonly taskId: string) { }
 }
 
 export class TaskAlreadyCompleted {
   readonly _tag = "TaskAlreadyCompleted" as const
-  constructor(readonly taskId: string) {}
+  constructor(readonly taskId: string) { }
 }
 
 export class TaskAlreadyCancelled {
   readonly _tag = "TaskAlreadyCancelled" as const
-  constructor(readonly taskId: string) {}
+  constructor(readonly taskId: string) { }
 }
 
 export class InvalidTaskInput {
   readonly _tag = "InvalidTaskInput" as const
-  constructor(readonly message: string) {}
+  constructor(readonly message: string) { }
 }
 
 export type TaskError =
@@ -61,22 +66,22 @@ export const createTask = (
       }
     }
 
-    const brandedTitle = TaskTitle.pipe(
-      (brand) => {
-        try { return brand(title) }
-        catch { return null }
-      },
-    )
+    let brandedTitle: TaskTitle | null = null
+    try {
+      brandedTitle = TaskTitle(title)
+    } catch {
+      brandedTitle = null
+    }
     if (!brandedTitle) {
       return yield* Effect.fail(new InvalidTaskInput(`Invalid title: must be 1-255 chars`))
     }
 
-    const brandedAssignee = TaskAssignee.pipe(
-      (brand) => {
-        try { return brand(assignee) }
-        catch { return null }
-      },
-    )
+    let brandedAssignee: TaskAssignee | null = null
+    try {
+      brandedAssignee = TaskAssignee(assignee)
+    } catch {
+      brandedAssignee = null
+    }
     if (!brandedAssignee) {
       return yield* Effect.fail(new InvalidTaskInput(`Invalid assignee: must be 1-255 chars`))
     }

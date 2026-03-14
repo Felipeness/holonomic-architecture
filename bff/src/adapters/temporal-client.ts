@@ -1,11 +1,6 @@
 import { Client, Connection, WorkflowExecutionAlreadyStartedError } from "@temporalio/client"
 import { randomUUID } from "node:crypto"
-import type {
-  CrossHolonSagaInput,
-  CrossHolonSagaOutput,
-  SyncWorkflowInput,
-  SyncWorkflowOutput,
-} from "@holonomic/shared/workflows"
+import type { CrossHolonSagaInput, SyncWorkflowInput } from "@holonomic/shared/workflows"
 
 // ─── Temporal Client Adapter ──────────────────────────────────────────────
 

@@ -7,6 +7,7 @@ import {
   EventStore,
   IdempotencyGuard,
   ItemNotFound,
+  ItemRepositoryError,
   IdempotencyKeyExists,
   type ItemError,
 } from "../port/repository.js"
@@ -59,7 +60,7 @@ export const createItem = (
 
 export const getItem = (
   id: HolonAId,
-): Effect.Effect<Item, ItemNotFound, ItemRepository> =>
+): Effect.Effect<Item, ItemNotFound | ItemRepositoryError, ItemRepository> =>
   Effect.gen(function* () {
     const repo = yield* ItemRepository
     return yield* repo.find(id)
@@ -126,9 +127,7 @@ export const compensateItem = (
     const repo = yield* ItemRepository
     const events = yield* EventStore
 
-    yield* repo.remove(id).pipe(
-      Effect.catchTag("ItemNotFound", () => Effect.void),
-    )
+    yield* repo.remove(id).pipe(Effect.catchTag("ItemNotFound", () => Effect.void))
 
     const existingEvents = yield* events.getEvents(id)
     const nextVersion = existingEvents.length + 1
