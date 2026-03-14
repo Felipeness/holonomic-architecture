@@ -161,6 +161,28 @@ Temporal provides: retry policies, timeouts, heartbeats, and exactly-once execut
 | `POST` | `/sync`                      | Starts sync workflow             |
 | `GET`  | `/workflow/:workflowId`      | Checks workflow status           |
 
+Create item via BFF (starts cross-holon saga):
+
+```bash
+curl -X POST http://localhost:3000/saga \
+    -H "Content-Type: application/json" \
+    -H "x-correlation-id: demo-corr-001" \
+    -d '{
+        "itemName": "Blue Widget",
+        "itemDescription": "Created via BFF saga",
+        "taskTitle": "Review new item",
+        "taskAssignee": "ops-team"
+    }'
+```
+
+The response includes `itemId`, `taskId`, and `workflowId`.
+
+Check workflow status via BFF:
+
+```bash
+curl http://localhost:3000/workflow/<workflowId>
+```
+
 ### Holon A — Items (`:3001`)
 
 | Method   | Path            | Description     |

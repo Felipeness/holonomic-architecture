@@ -194,6 +194,17 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: holon-b-worker
 
+  workflows-worker:
+    build:
+      context: .
+      dockerfile: workflows/Dockerfile
+    depends_on:
+      temporal:
+        condition: service_started
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE_WORKFLOWS: cross-holon-queue
+
   # ─── BFF ───────────────────────────────────────────────────────────────────
 
   bff:
@@ -204,6 +215,8 @@ services:
       holon-a:
         condition: service_started
       holon-b:
+        condition: service_started
+      workflows-worker:
         condition: service_started
       temporal:
         condition: service_started

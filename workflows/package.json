@@ -7,13 +7,17 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
-    "dev": "tsc -b --watch"
+    "dev": "tsc -b --watch",
+    "worker": "node dist/worker.js"
   },
   "dependencies": {
     "@temporalio/workflow": "^1.11.6",
-    "@holonomic/shared": "workspace:*"
+    "@holonomic/shared": "workspace:*",
+    "@temporalio/worker": "^1.11.6",
+    "pino": "^9.5.0"
   },
   "devDependencies": {
+    "@types/node": "^22.15.17",
     "typescript": "^5.7.2"
   }
 }
