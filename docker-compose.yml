@@ -65,9 +65,9 @@ services:
     volumes:
       - ./infra/otel/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
-      - "8889:8889"   # Prometheus exporter
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "8889:8889" # Prometheus exporter
 
   prometheus:
     image: prom/prometheus:v2.51.0
@@ -201,8 +201,10 @@ services:
       context: .
       dockerfile: bff/Dockerfile
     depends_on:
-      - holon-a
-      - holon-b
+      holon-a:
+        condition: service_started
+      holon-b:
+        condition: service_started
       temporal:
         condition: service_started
     environment:

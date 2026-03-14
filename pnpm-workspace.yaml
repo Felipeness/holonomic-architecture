@@ -1,5 +1,10 @@
 packages:
-  - "packages/*"
-  - "holons/*"
-  - "workflows"
-  - "bff"
+  - packages/*
+  - holons/*
+  - workflows
+  - bff
+
+onlyBuiltDependencies:
+  - "@swc/core"
+  - esbuild
+  - protobufjs
