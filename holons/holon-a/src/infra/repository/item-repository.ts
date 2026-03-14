@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect"
-import type { Pool, PoolClient } from "pg"
+import type { Pool } from "pg"
 import { HolonAId } from "@holonomic/shared/types"
 import {
   ItemRepository,
@@ -59,9 +59,7 @@ const makeService = (pool: Pool): ItemRepositoryService => ({
       catch: (err) => new ItemRepositoryError(err),
     }).pipe(
       Effect.flatMap((result) =>
-        result.rowCount === 0
-          ? Effect.fail(new ItemNotFound(item.id))
-          : Effect.void,
+        result.rowCount === 0 ? Effect.fail(new ItemNotFound(item.id)) : Effect.void,
       ),
     ),
 
@@ -75,9 +73,7 @@ const makeService = (pool: Pool): ItemRepositoryService => ({
       catch: (err) => new ItemRepositoryError(err),
     }).pipe(
       Effect.flatMap((result) =>
-        result.rowCount === 0
-          ? Effect.fail(new ItemNotFound(id))
-          : Effect.void,
+        result.rowCount === 0 ? Effect.fail(new ItemNotFound(id)) : Effect.void,
       ),
     ),
 })

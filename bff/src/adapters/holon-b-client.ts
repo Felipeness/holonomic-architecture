@@ -52,10 +52,7 @@ export const makeHolonBClient = (baseUrl: string) =>
             signal: AbortSignal.timeout(5_000),
           })
           if (!response.ok) {
-            throw new HolonBClientError(
-              `get task ${id}: ${response.statusText}`,
-              response.status,
-            )
+            throw new HolonBClientError(`get task ${id}: ${response.statusText}`, response.status)
           }
           return (await response.json()) as TaskResponse
         },
@@ -81,10 +78,7 @@ export const makeHolonBClient = (baseUrl: string) =>
             signal: AbortSignal.timeout(5_000),
           })
           if (!response.ok) {
-            throw new HolonBClientError(
-              `create task: ${response.statusText}`,
-              response.status,
-            )
+            throw new HolonBClientError(`create task: ${response.statusText}`, response.status)
           }
           return (await response.json()) as TaskResponse
         },

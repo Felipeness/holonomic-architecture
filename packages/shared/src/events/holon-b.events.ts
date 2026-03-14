@@ -28,8 +28,4 @@ export type TaskCompleted = DomainEvent<"TaskCompleted", TaskCompletedPayload>
 export type TaskCancelled = DomainEvent<"TaskCancelled", TaskCancelledPayload>
 export type TaskCompensated = DomainEvent<"TaskCompensated", TaskCompensatedPayload>
 
-export type HolonBEvent =
-  | TaskCreated
-  | TaskCompleted
-  | TaskCancelled
-  | TaskCompensated
+export type HolonBEvent = TaskCreated | TaskCompleted | TaskCancelled | TaskCompensated

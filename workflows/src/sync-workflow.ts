@@ -43,9 +43,7 @@ const holonBActivities = proxyActivities<HolonBActivities>({
 // ─── Sync Workflow ────────────────────────────────────────────────────────
 // Reads an item from HolonA and creates a corresponding task in HolonB
 
-export async function syncWorkflow(
-  input: SyncWorkflowInput,
-): Promise<SyncWorkflowOutput> {
+export async function syncWorkflow(input: SyncWorkflowInput): Promise<SyncWorkflowOutput> {
   const { correlationId, sourceHolonAId } = input
 
   // Query item from Holon A

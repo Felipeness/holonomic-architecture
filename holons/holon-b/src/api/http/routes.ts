@@ -30,22 +30,38 @@ const taskToResponse = (task: Task) => ({
   updatedAt: task.updatedAt.toISOString(),
 })
 
-const errorToStatus = (error: TaskError): { status: number; body: { error: string; message: string } } => {
+const errorToStatus = (
+  error: TaskError,
+): { status: number; body: { error: string; message: string } } => {
   switch (error._tag) {
     case "TaskNotFound":
-      return { status: 404, body: { error: "TaskNotFound", message: `Task ${error.taskId} not found` } }
+      return {
+        status: 404,
+        body: { error: "TaskNotFound", message: `Task ${error.taskId} not found` },
+      }
     case "TaskAlreadyCompleted":
-      return { status: 409, body: { error: "TaskAlreadyCompleted", message: `Task ${error.taskId} already completed` } }
+      return {
+        status: 409,
+        body: { error: "TaskAlreadyCompleted", message: `Task ${error.taskId} already completed` },
+      }
     case "TaskAlreadyCancelled":
-      return { status: 409, body: { error: "TaskAlreadyCancelled", message: `Task ${error.taskId} already cancelled` } }
+      return {
+        status: 409,
+        body: { error: "TaskAlreadyCancelled", message: `Task ${error.taskId} already cancelled` },
+      }
     case "InvalidTaskInput":
       return { status: 400, body: { error: "InvalidTaskInput", message: error.message } }
     case "RepositoryError":
-      return { status: 500, body: { error: "RepositoryError", message: `${error.operation}: internal error` } }
+      return {
+        status: 500,
+        body: { error: "RepositoryError", message: `${error.operation}: internal error` },
+      }
   }
 }
 
-const extractCorrelationId = (headers: Record<string, string | string[] | undefined>): CorrelationId => {
+const extractCorrelationId = (
+  headers: Record<string, string | string[] | undefined>,
+): CorrelationId => {
   const raw = headers["x-correlation-id"]
   const value = Array.isArray(raw) ? raw[0] : raw
   return CorrelationId(value ?? uuid())
@@ -77,8 +93,12 @@ export const registerRoutes = (
       return reply.status(400).send({ error: "ValidationError", message: "Invalid request body" })
     }
 
-    const correlationId = extractCorrelationId(request.headers as Record<string, string | string[] | undefined>)
-    const idempotencyKey = (request.headers as Record<string, string | undefined>)["x-idempotency-key"]
+    const correlationId = extractCorrelationId(
+      request.headers as Record<string, string | string[] | undefined>,
+    )
+    const idempotencyKey = (request.headers as Record<string, string | undefined>)[
+      "x-idempotency-key"
+    ]
 
     try {
       const task = await runEffect(
@@ -119,7 +139,9 @@ export const registerRoutes = (
 
     S.decodeUnknownEither(CompleteTaskSchema)(request.body ?? {})
 
-    const correlationId = extractCorrelationId(request.headers as Record<string, string | string[] | undefined>)
+    const correlationId = extractCorrelationId(
+      request.headers as Record<string, string | string[] | undefined>,
+    )
 
     try {
       const taskId = HolonBId(paramsParsed.right.id)
@@ -140,7 +162,9 @@ export const registerRoutes = (
       return reply.status(400).send({ error: "ValidationError", message: "Invalid task ID" })
     }
 
-    const correlationId = extractCorrelationId(request.headers as Record<string, string | string[] | undefined>)
+    const correlationId = extractCorrelationId(
+      request.headers as Record<string, string | string[] | undefined>,
+    )
 
     try {
       const taskId = HolonBId(paramsParsed.right.id)

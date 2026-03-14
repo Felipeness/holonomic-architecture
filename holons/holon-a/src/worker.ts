@@ -1,13 +1,17 @@
 import { NativeConnection, Worker } from "@temporalio/worker"
 import pg from "pg"
-import Redis from "ioredis"
+import { Redis } from "ioredis"
 import pino from "pino"
 import { Effect } from "effect"
 import { makeItemRepositoryLayer } from "./infra/repository/item-repository.js"
 import { makeEventStoreLayer } from "./infra/event-store/event-store.js"
 import { makeIdempotencyGuardLayer } from "./resilience/idempotency.js"
 import { ItemRepository, EventStore, IdempotencyGuard } from "./domain/port/repository.js"
-import { initActivityDeps, createItemActivity, compensateItemActivity } from "./api/temporal/activities.js"
+import {
+  initActivityDeps,
+  createItemActivity,
+  compensateItemActivity,
+} from "./api/temporal/activities.js"
 
 // ─── Env ────────────────────────────────────────────────────────────────────
 

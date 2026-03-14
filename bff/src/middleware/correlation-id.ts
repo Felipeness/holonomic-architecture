@@ -10,15 +10,12 @@ declare module "fastify" {
   }
 }
 
-export async function correlationIdPlugin(
-  fastify: FastifyInstance,
-): Promise<void> {
+export async function correlationIdPlugin(fastify: FastifyInstance): Promise<void> {
   fastify.decorateRequest("correlationId", "")
 
   fastify.addHook("onRequest", async (request, reply) => {
     const correlationId =
-      (request.headers["x-correlation-id"] as string | undefined) ??
-      randomUUID()
+      (request.headers["x-correlation-id"] as string | undefined) ?? randomUUID()
 
     request.correlationId = correlationId
     reply.header("x-correlation-id", correlationId)

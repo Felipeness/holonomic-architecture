@@ -24,11 +24,13 @@ export const makePgIdempotencyGuard = (pool: Pool): PgIdempotencyGuard => ({
   save: (key, response) =>
     Effect.tryPromise({
       try: () =>
-        pool.query(
-          `INSERT INTO holon_b.idempotency_keys (key, response) VALUES ($1, $2)
+        pool
+          .query(
+            `INSERT INTO holon_b.idempotency_keys (key, response) VALUES ($1, $2)
            ON CONFLICT (key) DO NOTHING`,
-          [key, JSON.stringify(response)],
-        ).then(() => undefined),
+            [key, JSON.stringify(response)],
+          )
+          .then(() => undefined),
       catch: (cause) => new RepositoryError("IdempotencyGuard.save", cause),
     }),
 })

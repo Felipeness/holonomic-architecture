@@ -2,7 +2,7 @@
 
 Monorepo boilerplate implementing **holonomic systems** principles from "The Whole and the Part" (O Todo e a Parte). Each service is a **holon** — simultaneously autonomous and integrated — with 4 anatomical layers, CQRS, event sourcing, and cross-holon orchestration via Temporal.
 
-> **Holon** (from Greek *holos* "whole" + *-on* "part"): an entity that is both a self-contained whole and a dependent part of a larger system.
+> **Holon** (from Greek _holos_ "whole" + _-on_ "part"): an entity that is both a self-contained whole and a dependent part of a larger system.
 
 ## Architecture
 
@@ -88,12 +88,12 @@ open http://localhost:3030               # Grafana (admin/admin)
 
 Each holon follows the same internal anatomy, mapped from biological systems:
 
-| Layer | Folder | Responsibility | Book Analogy |
-|-------|--------|---------------|-------------|
-| **API** | `api/` | Driving adapters — HTTP routes, Temporal activities | Skin: controls what enters and exits |
-| **Domain** | `domain/` | Domain core — entities, services, ports | Brain: decision-making, business rules |
-| **Infra** | `infra/` | Driven adapters — repositories, event store | Memory: stores and retrieves state |
-| **Resilience** | `resilience/` | Self-regulation — health checks, idempotency | Immune system: protects integrity |
+| Layer          | Folder        | Responsibility                                      | Book Analogy                           |
+| -------------- | ------------- | --------------------------------------------------- | -------------------------------------- |
+| **API**        | `api/`        | Driving adapters — HTTP routes, Temporal activities | Skin: controls what enters and exits   |
+| **Domain**     | `domain/`     | Domain core — entities, services, ports             | Brain: decision-making, business rules |
+| **Infra**      | `infra/`      | Driven adapters — repositories, event store         | Memory: stores and retrieves state     |
+| **Resilience** | `resilience/` | Self-regulation — health checks, idempotency        | Immune system: protects integrity      |
 
 > See branch [`book-metaphors`](../../tree/book-metaphors) for the original naming from the book (skin/brain/memory/immune).
 
@@ -134,71 +134,71 @@ Temporal provides: retry policies, timeouts, heartbeats, and exactly-once execut
 
 ## Holonomic Principles → Code
 
-| Principle | Implementation |
-|-----------|---------------|
+| Principle                                 | Implementation                                                             |
+| ----------------------------------------- | -------------------------------------------------------------------------- |
 | **Janus Effect** (autonomy + integration) | Each holon has its own Postgres schema + integrates via Temporal workflows |
-| **4 Anatomical Layers** | Explicit folder structure: api/domain/infra/resilience |
-| **Law of Imports** | Holons never import from each other — only from `@holonomic/shared` |
-| **Native Resilience** | Temporal: retry, timeout, compensation, heartbeat built-in |
-| **Holistic Observability** | OpenTelemetry traces + metrics across all layers |
-| **CQRS + Event Sourcing** | Separate command/query handlers, append-only event store |
-| **Idempotency** | Redis-backed idempotency keys on all write operations |
-| **Saga Orchestration** | Temporal workflows with automatic compensation |
-| **Parse Don't Validate** | Effect Schema at boundary, branded types internally |
-| **Functional Core / Imperative Shell** | Pure Effect programs in domain, side effects in api/infra |
-| **Screaming Architecture** | Folders scream purpose (api/domain/infra/resilience), not framework |
+| **4 Anatomical Layers**                   | Explicit folder structure: api/domain/infra/resilience                     |
+| **Law of Imports**                        | Holons never import from each other — only from `@holonomic/shared`        |
+| **Native Resilience**                     | Temporal: retry, timeout, compensation, heartbeat built-in                 |
+| **Holistic Observability**                | OpenTelemetry traces + metrics across all layers                           |
+| **CQRS + Event Sourcing**                 | Separate command/query handlers, append-only event store                   |
+| **Idempotency**                           | Redis-backed idempotency keys on all write operations                      |
+| **Saga Orchestration**                    | Temporal workflows with automatic compensation                             |
+| **Parse Don't Validate**                  | Effect Schema at boundary, branded types internally                        |
+| **Functional Core / Imperative Shell**    | Pure Effect programs in domain, side effects in api/infra                  |
+| **Screaming Architecture**                | Folders scream purpose (api/domain/infra/resilience), not framework        |
 
 ## API Endpoints
 
 ### BFF (`:3000`)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health/live` | Liveness probe |
-| `GET` | `/health/ready` | Readiness probe (checks Redis) |
-| `GET` | `/aggregate/:itemId/:taskId` | Aggregates data from both holons |
-| `POST` | `/saga` | Starts cross-holon saga workflow |
-| `POST` | `/sync` | Starts sync workflow |
-| `GET` | `/workflow/:workflowId` | Checks workflow status |
+| Method | Path                         | Description                      |
+| ------ | ---------------------------- | -------------------------------- |
+| `GET`  | `/health/live`               | Liveness probe                   |
+| `GET`  | `/health/ready`              | Readiness probe (checks Redis)   |
+| `GET`  | `/aggregate/:itemId/:taskId` | Aggregates data from both holons |
+| `POST` | `/saga`                      | Starts cross-holon saga workflow |
+| `POST` | `/sync`                      | Starts sync workflow             |
+| `GET`  | `/workflow/:workflowId`      | Checks workflow status           |
 
 ### Holon A — Items (`:3001`)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health/live` | Liveness probe |
-| `GET` | `/health/ready` | Readiness probe |
-| `POST` | `/items` | Create item |
-| `GET` | `/items/:id` | Get item by ID |
-| `PUT` | `/items/:id` | Update item |
-| `DELETE` | `/items/:id` | Delete item |
+| Method   | Path            | Description     |
+| -------- | --------------- | --------------- |
+| `GET`    | `/health/live`  | Liveness probe  |
+| `GET`    | `/health/ready` | Readiness probe |
+| `POST`   | `/items`        | Create item     |
+| `GET`    | `/items/:id`    | Get item by ID  |
+| `PUT`    | `/items/:id`    | Update item     |
+| `DELETE` | `/items/:id`    | Delete item     |
 
 ### Holon B — Tasks (`:3002`)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/health/live` | Liveness probe |
-| `GET` | `/health/ready` | Readiness probe |
-| `POST` | `/tasks` | Create task |
-| `GET` | `/tasks/:id` | Get task by ID |
-| `POST` | `/tasks/:id/complete` | Complete task |
-| `DELETE` | `/tasks/:id` | Cancel task |
+| Method   | Path                  | Description     |
+| -------- | --------------------- | --------------- |
+| `GET`    | `/health/live`        | Liveness probe  |
+| `GET`    | `/health/ready`       | Readiness probe |
+| `POST`   | `/tasks`              | Create task     |
+| `GET`    | `/tasks/:id`          | Get task by ID  |
+| `POST`   | `/tasks/:id/complete` | Complete task   |
+| `DELETE` | `/tasks/:id`          | Cancel task     |
 
 ## Technology Stack
 
-| Component | Technology | Why |
-|-----------|-----------|-----|
-| Runtime | Node.js 20 | LTS, native fetch, stable |
-| Language | TypeScript (strict) | Type safety, branded types |
-| Effect System | Effect-TS | Typed errors, DI via Context.Tag/Layer, concurrency |
-| HTTP Framework | Fastify | Performance, schema validation, plugins |
-| Orchestration | Temporal | Workflows, sagas, retry, compensation |
-| Database | PostgreSQL 16 | Schemas per holon, JSONB for events |
-| Cache | Redis 7 | Idempotency keys, rate limiting |
-| Observability | OpenTelemetry | Vendor-neutral traces + metrics |
-| Metrics | Prometheus | Time-series storage |
-| Dashboards | Grafana | Pre-configured holonomic overview |
-| Monorepo | pnpm workspaces | Fast, disk-efficient |
-| Containers | Docker Compose | Local development, full stack |
+| Component      | Technology          | Why                                                 |
+| -------------- | ------------------- | --------------------------------------------------- |
+| Runtime        | Node.js 20          | LTS, native fetch, stable                           |
+| Language       | TypeScript (strict) | Type safety, branded types                          |
+| Effect System  | Effect-TS           | Typed errors, DI via Context.Tag/Layer, concurrency |
+| HTTP Framework | Fastify             | Performance, schema validation, plugins             |
+| Orchestration  | Temporal            | Workflows, sagas, retry, compensation               |
+| Database       | PostgreSQL 16       | Schemas per holon, JSONB for events                 |
+| Cache          | Redis 7             | Idempotency keys, rate limiting                     |
+| Observability  | OpenTelemetry       | Vendor-neutral traces + metrics                     |
+| Metrics        | Prometheus          | Time-series storage                                 |
+| Dashboards     | Grafana             | Pre-configured holonomic overview                   |
+| Monorepo       | pnpm workspaces     | Fast, disk-efficient                                |
+| Containers     | Docker Compose      | Local development, full stack                       |
 
 ## Database Strategy
 

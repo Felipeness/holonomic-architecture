@@ -45,11 +45,8 @@ const holonBActivities = proxyActivities<HolonBActivities>({
 // Orchestrates: Create Item (HolonA) → Create Task (HolonB)
 // Compensates: If HolonB fails → Rollback Item in HolonA
 
-export async function crossHolonSaga(
-  input: CrossHolonSagaInput,
-): Promise<CrossHolonSagaOutput> {
-  const { correlationId, itemName, itemDescription, taskTitle, taskAssignee } =
-    input
+export async function crossHolonSaga(input: CrossHolonSagaInput): Promise<CrossHolonSagaOutput> {
+  const { correlationId, itemName, itemDescription, taskTitle, taskAssignee } = input
 
   // Step 1: Create item in Holon A
   const itemResult = await holonAActivities.createItemActivity({
