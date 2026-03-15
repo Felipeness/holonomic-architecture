@@ -1,10 +1,5 @@
 import { Effect } from "effect"
-import type {
-  EventMetadata,
-  HolonAId,
-  CorrelationId,
-  EventId,
-} from "@holonomic/shared/types"
+import type { EventMetadata, HolonAId, CorrelationId, EventId } from "@holonomic/shared/types"
 import type {
   ItemCreated,
   ItemUpdated,

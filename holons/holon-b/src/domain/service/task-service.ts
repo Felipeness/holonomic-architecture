@@ -21,22 +21,22 @@ import { taskCreated, taskCompleted, taskCancelled, taskCompensated } from "../e
 
 export class TaskNotFound {
   readonly _tag = "TaskNotFound" as const
-  constructor(readonly taskId: string) { }
+  constructor(readonly taskId: string) {}
 }
 
 export class TaskAlreadyCompleted {
   readonly _tag = "TaskAlreadyCompleted" as const
-  constructor(readonly taskId: string) { }
+  constructor(readonly taskId: string) {}
 }
 
 export class TaskAlreadyCancelled {
   readonly _tag = "TaskAlreadyCancelled" as const
-  constructor(readonly taskId: string) { }
+  constructor(readonly taskId: string) {}
 }
 
 export class InvalidTaskInput {
   readonly _tag = "InvalidTaskInput" as const
-  constructor(readonly message: string) { }
+  constructor(readonly message: string) {}
 }
 
 export type TaskError =
