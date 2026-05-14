@@ -1,21 +1,15 @@
 import type { FastifyInstance } from "fastify"
-import { Effect } from "effect"
-import {
-  HolonAClient,
-  type HolonAClientError,
-} from "../adapters/holon-a-client.js"
-import {
-  HolonBClient,
-  type HolonBClientError,
-} from "../adapters/holon-b-client.js"
+import { Context, Effect } from "effect"
+import { HolonAClient, type HolonAClientError } from "../adapters/holon-a-client.js"
+import { HolonBClient, type HolonBClientError } from "../adapters/holon-b-client.js"
 import type { TemporalClientAdapter } from "../adapters/temporal-client.js"
-import { CorrelationId } from "@holonomic/shared/types"
+import { CorrelationId, HolonAId } from "@holonomic/shared/types"
 
 // ─── Aggregate Routes ─────────────────────────────────────────────────────
 
 interface RouteOptions {
   readonly temporalClient: TemporalClientAdapter
-  readonly effectContext: Effect.Context.Context<HolonAClient | HolonBClient>
+  readonly effectContext: Context.Context<HolonAClient | HolonBClient>
 }
 
 export async function aggregateRoutes(
@@ -33,20 +27,14 @@ export async function aggregateRoutes(
 
     const program = Effect.all(
       {
-        item: Effect.flatMap(HolonAClient, (client) =>
-          client.getItem(itemId, correlationId),
-        ),
-        task: Effect.flatMap(HolonBClient, (client) =>
-          client.getTask(taskId, correlationId),
-        ),
+        item: Effect.flatMap(HolonAClient, (client) => client.getItem(itemId, correlationId)),
+        task: Effect.flatMap(HolonBClient, (client) => client.getTask(taskId, correlationId)),
       },
       { concurrency: "unbounded" },
     )
 
     try {
-      const result = await Effect.runPromise(
-        program.pipe(Effect.provide(effectContext)),
-      )
+      const result = await Effect.runPromise(program.pipe(Effect.provide(effectContext)))
       return reply.send({
         correlationId,
         item: result.item,
@@ -72,10 +60,10 @@ export async function aggregateRoutes(
       taskAssignee: string
     }
   }>("/saga", async (request, reply) => {
-    const correlationId = request.correlationId as string & { readonly [Symbol.nominal]: "CorrelationId" }
+    const correlationId = CorrelationId(request.correlationId)
 
     const result = await temporalClient.startCrossHolonSaga({
-      correlationId: CorrelationId(correlationId),
+      correlationId,
       itemName: request.body.itemName,
       itemDescription: request.body.itemDescription,
       taskTitle: request.body.taskTitle,
@@ -93,11 +81,11 @@ export async function aggregateRoutes(
   fastify.post<{
     Body: { sourceItemId: string }
   }>("/sync", async (request, reply) => {
-    const correlationId = request.correlationId as string & { readonly [Symbol.nominal]: "CorrelationId" }
+    const correlationId = CorrelationId(request.correlationId)
 
     const result = await temporalClient.startSyncWorkflow({
-      correlationId: CorrelationId(correlationId),
-      sourceHolonAId: request.body.sourceItemId as any,
+      correlationId,
+      sourceHolonAId: HolonAId(request.body.sourceItemId),
     })
 
     return reply.status(202).send({
@@ -112,9 +100,7 @@ export async function aggregateRoutes(
     Params: { workflowId: string }
   }>("/workflow/:workflowId", async (request, reply) => {
     try {
-      const status = await temporalClient.getWorkflowStatus(
-        request.params.workflowId,
-      )
+      const status = await temporalClient.getWorkflowStatus(request.params.workflowId)
       return reply.send(status)
     } catch {
       return reply.status(404).send({

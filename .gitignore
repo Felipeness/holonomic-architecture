@@ -1,4 +1,5 @@
 node_modules/
+.pnpm-store/
 dist/
 *.js.map
 *.d.ts.map
@@ -9,3 +10,4 @@ Thumbs.db
 *.log
 coverage/
 .turbo/
+*.tsbuildinfo

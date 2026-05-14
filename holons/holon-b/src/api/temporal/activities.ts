@@ -1,5 +1,4 @@
 import { Effect, Layer } from "effect"
-import { HolonBId, CorrelationId } from "@holonomic/shared/types"
 import type {
   CreateTaskInput,
   CreateTaskOutput,
@@ -31,10 +30,7 @@ export const makeActivities = (
     createTaskActivity: async (input: CreateTaskInput): Promise<CreateTaskOutput> => {
       logger.info({ input }, "executing createTaskActivity")
       const task = await Effect.runPromise(
-        Effect.provide(
-          createTask(input.title, input.assignee, input.correlationId),
-          serviceLayer,
-        ),
+        Effect.provide(createTask(input.title, input.assignee, input.correlationId), serviceLayer),
       )
       logger.info({ taskId: task.id }, "createTaskActivity completed")
       return { taskId: task.id }

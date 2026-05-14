@@ -13,21 +13,23 @@ export const makePgEventStore = (pool: Pool): PgEventStore => ({
   append: (aggregateId, event) =>
     Effect.tryPromise({
       try: () =>
-        pool.query(
-          `INSERT INTO holon_b.events (id, aggregate_id, event_type, payload, metadata, version)
+        pool
+          .query(
+            `INSERT INTO holon_b.events (id, aggregate_id, event_type, payload, metadata, version)
            VALUES ($1, $2, $3, $4, $5, $6)`,
-          [
-            event.metadata.eventId,
-            aggregateId,
-            event._tag,
-            JSON.stringify(event.payload),
-            JSON.stringify({
-              correlationId: event.metadata.correlationId,
-              timestamp: event.metadata.timestamp.toISOString(),
-            }),
-            event.metadata.version,
-          ],
-        ).then(() => undefined),
+            [
+              event.metadata.eventId,
+              aggregateId,
+              event._tag,
+              JSON.stringify(event.payload),
+              JSON.stringify({
+                correlationId: event.metadata.correlationId,
+                timestamp: event.metadata.timestamp.toISOString(),
+              }),
+              event.metadata.version,
+            ],
+          )
+          .then(() => undefined),
       catch: (cause) => new RepositoryError("EventStore.append", cause),
     }),
 

@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import type { Pool } from "pg"
-import type Redis from "ioredis"
+import type { Redis } from "ioredis"
 import { IdempotencyGuard, type IdempotencyGuardService } from "../domain/port/repository.js"
 
 const REDIS_TTL_SECONDS = 86_400 // 24h
@@ -28,7 +28,7 @@ const makeService = (redis: Redis, pool: Pool): IdempotencyGuardService => ({
         return { exists: false, response: null }
       },
       catch: () => ({ exists: false, response: null }),
-    }),
+    }).pipe(Effect.catchAll(() => Effect.succeed({ exists: false, response: null }))),
 
   save: (key, response) =>
     Effect.tryPromise({
@@ -40,8 +40,13 @@ const makeService = (redis: Redis, pool: Pool): IdempotencyGuardService => ({
         await redis.setex(`idempotency:${key}`, REDIS_TTL_SECONDS, JSON.stringify(response))
       },
       catch: () => undefined,
-    }).pipe(Effect.asVoid),
+    }).pipe(
+      Effect.asVoid,
+      Effect.catchAll(() => Effect.void),
+    ),
 })
 
-export const makeIdempotencyGuardLayer = (redis: Redis, pool: Pool): Layer.Layer<IdempotencyGuard> =>
-  Layer.succeed(IdempotencyGuard, makeService(redis, pool))
+export const makeIdempotencyGuardLayer = (
+  redis: Redis,
+  pool: Pool,
+): Layer.Layer<IdempotencyGuard> => Layer.succeed(IdempotencyGuard, makeService(redis, pool))

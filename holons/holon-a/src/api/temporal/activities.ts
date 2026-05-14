@@ -1,6 +1,10 @@
 import { Effect, Layer } from "effect"
-import { HolonAId, CorrelationId } from "@holonomic/shared/types"
-import type { CreateItemInput, CreateItemOutput, CompensateItemInput } from "@holonomic/shared/workflows"
+import { HolonAId } from "@holonomic/shared/types"
+import type {
+  CreateItemInput,
+  CreateItemOutput,
+  CompensateItemInput,
+} from "@holonomic/shared/workflows"
 import * as ItemService from "../../domain/service/item-service.js"
 import {
   ItemRepository,
@@ -39,23 +43,17 @@ const makeLayer = () =>
 export async function createItemActivity(input: CreateItemInput): Promise<CreateItemOutput> {
   const itemId = HolonAId(crypto.randomUUID())
   const item = await Effect.runPromise(
-    ItemService.createItem(
-      itemId,
-      input.name,
-      input.description,
-      input.correlationId,
-      null,
-    ).pipe(Effect.provide(makeLayer())),
+    ItemService.createItem(itemId, input.name, input.description, input.correlationId, null).pipe(
+      Effect.provide(makeLayer()),
+    ),
   )
   return { itemId: item.id }
 }
 
 export async function compensateItemActivity(input: CompensateItemInput): Promise<void> {
   await Effect.runPromise(
-    ItemService.compensateItem(
-      input.itemId,
-      input.reason,
-      input.correlationId,
-    ).pipe(Effect.provide(makeLayer())),
+    ItemService.compensateItem(input.itemId, input.reason, input.correlationId).pipe(
+      Effect.provide(makeLayer()),
+    ),
   )
 }

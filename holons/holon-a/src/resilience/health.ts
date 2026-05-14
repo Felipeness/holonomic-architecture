@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify"
 import type { Pool } from "pg"
-import type Redis from "ioredis"
+import type { Redis } from "ioredis"
 
 export const registerHealthRoutes = (app: FastifyInstance, pool: Pool, redis: Redis): void => {
   app.get("/health/live", async (_req, reply) => {

@@ -1,14 +1,10 @@
 import type { FastifyInstance } from "fastify"
 import type { Pool } from "pg"
-import type Redis from "ioredis"
+import type { Redis } from "ioredis"
 
 // ─── Health Check Routes ───────────────────────────────────────────────────
 
-export const registerHealthRoutes = (
-  app: FastifyInstance,
-  pool: Pool,
-  redis?: Redis,
-) => {
+export const registerHealthRoutes = (app: FastifyInstance, pool: Pool, redis?: Redis) => {
   app.get("/health/live", async (_request, reply) => {
     return reply.status(200).send({ status: "ok", service: "holon-b" })
   })
@@ -24,9 +20,7 @@ export const registerHealthRoutes = (
         redis: redis ? "connected" : "not_configured",
       })
     } catch {
-      return reply
-        .status(503)
-        .send({ status: "not_ready", service: "holon-b" })
+      return reply.status(503).send({ status: "not_ready", service: "holon-b" })
     }
   })
 }

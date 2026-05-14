@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify"
-import type Redis from "ioredis"
+import type { Redis } from "ioredis"
 
 // ─── Rate Limit Plugin ────────────────────────────────────────────────────
 // Simple sliding window rate limiter backed by Redis

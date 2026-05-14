@@ -9,7 +9,12 @@ import {
   TaskAssignee,
   type Task,
 } from "../model/task.js"
-import { TaskRepository, EventStore, IdempotencyGuard, RepositoryError } from "../port/repository.js"
+import {
+  TaskRepository,
+  EventStore,
+  IdempotencyGuard,
+  RepositoryError,
+} from "../port/repository.js"
 import { taskCreated, taskCompleted, taskCancelled, taskCompensated } from "../event/task-events.js"
 
 // ─── Domain Errors ─────────────────────────────────────────────────────────
@@ -61,22 +66,22 @@ export const createTask = (
       }
     }
 
-    const brandedTitle = TaskTitle.pipe(
-      (brand) => {
-        try { return brand(title) }
-        catch { return null }
-      },
-    )
+    let brandedTitle: TaskTitle | null = null
+    try {
+      brandedTitle = TaskTitle(title)
+    } catch {
+      brandedTitle = null
+    }
     if (!brandedTitle) {
       return yield* Effect.fail(new InvalidTaskInput(`Invalid title: must be 1-255 chars`))
     }
 
-    const brandedAssignee = TaskAssignee.pipe(
-      (brand) => {
-        try { return brand(assignee) }
-        catch { return null }
-      },
-    )
+    let brandedAssignee: TaskAssignee | null = null
+    try {
+      brandedAssignee = TaskAssignee(assignee)
+    } catch {
+      brandedAssignee = null
+    }
     if (!brandedAssignee) {
       return yield* Effect.fail(new InvalidTaskInput(`Invalid assignee: must be 1-255 chars`))
     }

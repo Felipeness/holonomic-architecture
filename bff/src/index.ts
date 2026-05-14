@@ -1,6 +1,6 @@
 import Fastify from "fastify"
-import { Effect, Layer, Context } from "effect"
-import Redis from "ioredis"
+import { Context } from "effect"
+import { Redis } from "ioredis"
 import pino from "pino"
 import { NodeSDK } from "@opentelemetry/sdk-node"
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http"
@@ -11,14 +11,8 @@ import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics"
 import { correlationIdPlugin } from "./middleware/correlation-id.js"
 import { rateLimitPlugin } from "./middleware/rate-limit.js"
 import { aggregateRoutes } from "./routes/aggregate.js"
-import {
-  HolonAClient,
-  makeHolonAClient,
-} from "./adapters/holon-a-client.js"
-import {
-  HolonBClient,
-  makeHolonBClient,
-} from "./adapters/holon-b-client.js"
+import { HolonAClient, makeHolonAClient } from "./adapters/holon-a-client.js"
+import { HolonBClient, makeHolonBClient } from "./adapters/holon-b-client.js"
 import { createTemporalClient } from "./adapters/temporal-client.js"
 
 // ─── Configuration ────────────────────────────────────────────────────────

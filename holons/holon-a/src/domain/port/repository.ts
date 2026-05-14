@@ -27,7 +27,10 @@ export class EventStoreError {
 
 export class IdempotencyKeyExists {
   readonly _tag = "IdempotencyKeyExists"
-  constructor(readonly key: string, readonly response: unknown) {}
+  constructor(
+    readonly key: string,
+    readonly response: unknown,
+  ) {}
 }
 
 export type ItemError =
@@ -52,16 +55,22 @@ export class ItemRepository extends Context.Tag("ItemRepository")<
 >() {}
 
 export interface EventStoreService {
-  readonly append: (aggregateId: HolonAId, event: HolonAEvent) => Effect.Effect<void, EventStoreError>
-  readonly getEvents: (aggregateId: HolonAId) => Effect.Effect<readonly HolonAEvent[], EventStoreError>
+  readonly append: (
+    aggregateId: HolonAId,
+    event: HolonAEvent,
+  ) => Effect.Effect<void, EventStoreError>
+  readonly getEvents: (
+    aggregateId: HolonAId,
+  ) => Effect.Effect<readonly HolonAEvent[], EventStoreError>
   readonly getSnapshot: (aggregateId: HolonAId) => Effect.Effect<Item | null, EventStoreError>
-  readonly saveSnapshot: (aggregateId: HolonAId, state: Item, version: number) => Effect.Effect<void, EventStoreError>
+  readonly saveSnapshot: (
+    aggregateId: HolonAId,
+    state: Item,
+    version: number,
+  ) => Effect.Effect<void, EventStoreError>
 }
 
-export class EventStore extends Context.Tag("EventStore")<
-  EventStore,
-  EventStoreService
->() {}
+export class EventStore extends Context.Tag("EventStore")<EventStore, EventStoreService>() {}
 
 export interface IdempotencyGuardService {
   readonly check: (key: string) => Effect.Effect<{ exists: boolean; response: unknown | null }>

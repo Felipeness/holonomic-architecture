@@ -40,22 +40,22 @@ const makeService = (pool: Pool): EventStoreService => ({
         ),
       catch: (err) => new EventStoreError(err),
     }).pipe(
-      Effect.map((result) =>
-        result.rows.map((row: Record<string, unknown>) => ({
-          _tag: row["event_type"] as HolonAEvent["_tag"],
-          payload: row["payload"] as HolonAEvent["payload"],
-          metadata: row["metadata"] as HolonAEvent["metadata"],
-        })) as unknown as readonly HolonAEvent[],
+      Effect.map(
+        (result) =>
+          result.rows.map((row: Record<string, unknown>) => ({
+            _tag: row["event_type"] as HolonAEvent["_tag"],
+            payload: row["payload"] as HolonAEvent["payload"],
+            metadata: row["metadata"] as HolonAEvent["metadata"],
+          })) as unknown as readonly HolonAEvent[],
       ),
     ),
 
   getSnapshot: (aggregateId) =>
     Effect.tryPromise({
       try: () =>
-        pool.query(
-          `SELECT state, version FROM holon_a.snapshots WHERE aggregate_id = $1`,
-          [aggregateId],
-        ),
+        pool.query(`SELECT state, version FROM holon_a.snapshots WHERE aggregate_id = $1`, [
+          aggregateId,
+        ]),
       catch: (err) => new EventStoreError(err),
     }).pipe(
       Effect.map((result) => {

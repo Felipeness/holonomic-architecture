@@ -51,10 +51,7 @@ export const makeHolonAClient = (baseUrl: string) =>
             signal: AbortSignal.timeout(5_000),
           })
           if (!response.ok) {
-            throw new HolonAClientError(
-              `get item ${id}: ${response.statusText}`,
-              response.status,
-            )
+            throw new HolonAClientError(`get item ${id}: ${response.statusText}`, response.status)
           }
           return (await response.json()) as ItemResponse
         },
@@ -80,10 +77,7 @@ export const makeHolonAClient = (baseUrl: string) =>
             signal: AbortSignal.timeout(5_000),
           })
           if (!response.ok) {
-            throw new HolonAClientError(
-              `create item: ${response.statusText}`,
-              response.status,
-            )
+            throw new HolonAClientError(`create item: ${response.statusText}`, response.status)
           }
           return (await response.json()) as ItemResponse
         },

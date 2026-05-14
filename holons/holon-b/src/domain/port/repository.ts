@@ -24,9 +24,7 @@ export interface EventStore {
   readonly getEvents: (
     aggregateId: HolonBId,
   ) => Effect.Effect<ReadonlyArray<HolonBEvent>, RepositoryError>
-  readonly getVersion: (
-    aggregateId: HolonBId,
-  ) => Effect.Effect<number, RepositoryError>
+  readonly getVersion: (aggregateId: HolonBId) => Effect.Effect<number, RepositoryError>
 }
 
 export const EventStore = Context.GenericTag<EventStore>("EventStore")
@@ -37,10 +35,7 @@ export interface IdempotencyGuard {
   readonly check: (
     key: string,
   ) => Effect.Effect<{ exists: boolean; response: unknown | null }, RepositoryError>
-  readonly save: (
-    key: string,
-    response: unknown,
-  ) => Effect.Effect<void, RepositoryError>
+  readonly save: (key: string, response: unknown) => Effect.Effect<void, RepositoryError>
 }
 
 export const IdempotencyGuard = Context.GenericTag<IdempotencyGuard>("IdempotencyGuard")

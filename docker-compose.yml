@@ -65,9 +65,9 @@ services:
     volumes:
       - ./infra/otel/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
-      - "8889:8889"   # Prometheus exporter
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "8889:8889" # Prometheus exporter
 
   prometheus:
     image: prom/prometheus:v2.51.0
@@ -86,9 +86,14 @@ services:
     depends_on:
       - prometheus
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/holonomic-overview.json
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+
     volumes:
       - ./infra/grafana/provisioning:/etc/grafana/provisioning
       - ./infra/grafana/dashboards:/var/lib/grafana/dashboards
@@ -201,8 +206,10 @@ services:
       context: .
       dockerfile: bff/Dockerfile
     depends_on:
-      - holon-a
-      - holon-b
+      holon-a:
+        condition: service_started
+      holon-b:
+        condition: service_started
       temporal:
         condition: service_started
     environment:

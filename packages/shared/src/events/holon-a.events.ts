@@ -28,8 +28,4 @@ export type ItemUpdated = DomainEvent<"ItemUpdated", ItemUpdatedPayload>
 export type ItemDeleted = DomainEvent<"ItemDeleted", ItemDeletedPayload>
 export type ItemCompensated = DomainEvent<"ItemCompensated", ItemCompensatedPayload>
 
-export type HolonAEvent =
-  | ItemCreated
-  | ItemUpdated
-  | ItemDeleted
-  | ItemCompensated
+export type HolonAEvent = ItemCreated | ItemUpdated | ItemDeleted | ItemCompensated
